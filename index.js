@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const app = express();
 
@@ -31,26 +31,27 @@ async function run() {
 
     const itemCollection = client.db("craft&artDB").collection("craft and art");
 
-    app.get("/addItem", async(req,res)=>{
-      const cursor = itemCollection.find()
-      const result = await cursor.toArray()
-      res.send(result)
-    })
+    app.get("/addItem", async (req, res) => {
+      const cursor = itemCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
+   
     app.post("/addItem", async (req, res) => {
       const newItem = req.body;
       console.log(newItem);
       const result = await itemCollection.insertOne(newItem);
-      res.send(result)
+      res.send(result);
     });
 
+    app.delete("/addItem/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await itemCollection.deleteOne(query);
 
-
-
-
-
-
-
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
