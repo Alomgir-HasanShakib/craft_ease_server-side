@@ -31,6 +31,7 @@ async function run() {
 
     const itemCollection = client.db("craft&artDB").collection("craft and art");
 
+    // for giving data access to the client side
     app.get("/addItem", async (req, res) => {
       const cursor = itemCollection.find();
       const result = await cursor.toArray();
@@ -45,12 +46,40 @@ async function run() {
       res.send(result);
     });
 
+    // for data stored in database
+
     app.post("/addItem", async (req, res) => {
       const newItem = req.body;
       console.log(newItem);
       const result = await itemCollection.insertOne(newItem);
       res.send(result);
     });
+
+    // data update
+
+    app.put("/addItem/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateCraft = req.body;
+      const craft = {
+        $set: {
+          imageURl: updateCraft.imageURl,
+          item_name: updateCraft.item_name,
+          price: updateCraft.price,
+          rating: updateCraft.rating,
+          customize: updateCraft.customize,
+          processingTime: updateCraft.processingTime,
+          stock: updateCraft.stock,
+          category: updateCraft.category,
+          description: updateCraft.description,
+        },
+      };
+      const result = await itemCollection.updateOne(filter, craft, options);
+      res.send(result);
+    });
+
+    // for data delating
 
     app.delete("/addItem/:id", async (req, res) => {
       const id = req.params.id;
